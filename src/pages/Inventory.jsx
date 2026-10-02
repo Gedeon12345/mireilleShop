@@ -73,8 +73,6 @@ export default function Inventory({ lowOnly = false }) {
         </div>
       )}
 
-      <Link to="/inventaire/nouveau" aria-label="Ajouter un produit" className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-10 grid h-14 w-14 place-items-center rounded-full bg-primary text-white shadow-lg sm:hidden"><Plus size={26} /></Link>
-
       {open && (
         <div className="fixed inset-0 z-30 flex items-end justify-center bg-ink/50 sm:items-center" onClick={() => setOpen(null)}>
           <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} onClick={(e) => e.stopPropagation()}

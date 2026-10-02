@@ -12,7 +12,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r.data,
   (err) => {
-    if (err.response?.status === 401) localStorage.removeItem('token')
+    // Session expirée : retour à la connexion (sauf pour la tentative de connexion elle-même)
+    if (err.response?.status === 401 && !err.config?.url?.includes('/auth/login')) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      if (window.location.pathname !== '/connexion') window.location.assign('/connexion')
+    }
     return Promise.reject(new Error(err.response?.data?.message || 'Erreur réseau'))
   }
 )
