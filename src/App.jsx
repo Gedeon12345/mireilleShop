@@ -6,7 +6,9 @@ import Login from './pages/Login.jsx'
 import ProductForm from './pages/ProductForm.jsx'
 import Categories from './pages/Categories.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
-import ComingSoon from './pages/ComingSoon.jsx'
+import NewSale from './pages/NewSale.jsx'
+import SalesHistory from './pages/SalesHistory.jsx'
+import Settings from './pages/Settings.jsx'
 
 export default function App() {
   return (
@@ -20,9 +22,9 @@ export default function App() {
         <Route path="inventaire/nouveau" element={<ProductForm />} />
         <Route path="inventaire/:id/modifier" element={<ProductForm />} />
         <Route path="inventaire/categories" element={<Categories />} />
-        <Route path="ventes/nouvelle" element={<ComingSoon title="Nouvelle vente" />} />
-        <Route path="ventes" element={<ComingSoon title="Historique des ventes" />} />
-        <Route path="parametres" element={<ComingSoon title="Paramètres" />} />
+        <Route path="ventes/nouvelle" element={<NewSale />} />
+        <Route path="ventes" element={<SalesHistory />} />
+        <Route path="parametres" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
       </Route>

@@ -10,7 +10,7 @@ import ErrorState from '../components/ui/ErrorState'
 import EmptyState from '../components/ui/EmptyState'
 import useFetch from '../hooks/useFetch'
 import { productService } from '../services/productService'
-import { formatFCFA, totalStock, productStatus, stockStatus } from '../utils/format'
+import { formatFCFA, totalStock, productStatus, stockStatus, colorsOf, groupByColor } from '../utils/format'
 
 const FILTERS = [['all', 'Tous'], ['ok', 'En stock'], ['low', 'Stock faible'], ['out', 'Rupture']]
 const inputCls = 'w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20'
@@ -26,7 +26,7 @@ export default function Inventory({ lowOnly = false }) {
   const list = useMemo(() => (data || []).filter((p) =>
     (cat === 'all' || p.category.name === cat) &&
     (status === 'all' || productStatus(p) === status) &&
-    `${p.name} ${p.category.name}`.toLowerCase().includes(q.toLowerCase())), [data, q, cat, status])
+    `${p.name} ${p.category.name} ${colorsOf(p).join(' ')}`.toLowerCase().includes(q.toLowerCase())), [data, q, cat, status])
 
   return (
     <>
@@ -59,17 +59,21 @@ export default function Inventory({ lowOnly = false }) {
           {list.map((p, i) => (
             <motion.button key={p._id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.03 }}
               onClick={() => setOpen(p)} className="flex gap-4 rounded-2xl border border-line bg-surface p-4 text-left shadow-card transition-colors hover:border-primary">
-              <span className="grid h-20 w-20 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><Footprints size={30} /></span>
+              {p.image
+                ? <img src={p.image} alt={p.name} loading="lazy" className="h-20 w-20 shrink-0 rounded-xl object-cover" />
+                : <span className="grid h-20 w-20 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary"><Footprints size={30} /></span>}
               <span className="min-w-0">
                 <span className="block truncate font-display font-semibold">{p.name}</span>
                 <span className="block text-xs text-ink-soft">{p.category.name} · {p.gender}</span>
                 <span className="mt-0.5 block text-sm font-semibold">{formatFCFA(p.price)}</span>
-                <span className="mt-1.5 flex flex-wrap items-center gap-2"><StatusBadge status={productStatus(p)} /><span className="text-xs text-ink-soft">{totalStock(p)} paires</span></span>
+                <span className="mt-1.5 flex flex-wrap items-center gap-2"><StatusBadge status={productStatus(p)} /><span className="text-xs text-ink-soft">{totalStock(p)} paires · {colorsOf(p).length} couleur{colorsOf(p).length > 1 ? 's' : ''}</span></span>
               </span>
             </motion.button>
           ))}
         </div>
       )}
+
+      <Link to="/inventaire/nouveau" aria-label="Ajouter un produit" className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-10 grid h-14 w-14 place-items-center rounded-full bg-primary text-white shadow-lg sm:hidden"><Plus size={26} /></Link>
 
       {open && (
         <div className="fixed inset-0 z-30 flex items-end justify-center bg-ink/50 sm:items-center" onClick={() => setOpen(null)}>
@@ -79,18 +83,24 @@ export default function Inventory({ lowOnly = false }) {
               <div><h2 className="text-xl font-bold">{open.name}</h2><p className="text-sm text-ink-soft">{open.category.name} · {open.gender}</p></div>
               <button aria-label="Fermer" onClick={() => setOpen(null)} className="rounded-lg p-1.5 hover:bg-canvas"><X size={20} /></button>
             </div>
+            {open.image && <img src={open.image} alt={open.name} className="mt-4 h-52 w-full rounded-2xl object-cover" />}
             <p className="mt-3 text-xl font-semibold">{formatFCFA(open.price)}</p>
             <h3 className="mt-5 text-sm font-semibold">Répartition du stock</h3>
-            <div className="mt-3 grid grid-cols-5 gap-2">
-              {open.sizes.map((s) => {
-                const st = stockStatus(s.quantity)
-                const c = st === 'out' ? 'border-red-300 bg-red-50 text-red-800' : st === 'low' ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-line'
-                return <div key={s.size} className={`rounded-xl border py-2 text-center ${c}`}><span className="block text-xs">{s.size}</span><b className="text-lg">{s.quantity}</b></div>
-              })}
-            </div>
+            {groupByColor(open).map((g) => (
+              <div key={g.color} className="mt-3">
+                <p className="mb-1.5 flex items-baseline gap-2 text-sm font-medium">{g.color}<span className="text-xs font-normal text-ink-soft">{g.total} paires</span></p>
+                <div className="grid grid-cols-5 gap-2">
+                  {g.sizes.map((s) => {
+                    const st = stockStatus(s.quantity)
+                    const c = st === 'out' ? 'border-red-300 bg-red-50 text-red-800' : st === 'low' ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-line'
+                    return <div key={s.size} className={`rounded-xl border py-2 text-center ${c}`}><span className="block text-xs">{s.size}</span><b className="text-lg">{s.quantity}</b></div>
+                  })}
+                </div>
+              </div>
+            ))}
             <p className="mt-4 font-semibold">Total : {totalStock(open)} paires</p>
             <div className="mt-5 flex gap-2">
-              <Link to="/ventes/nouvelle" className="flex-1"><Button className="w-full">Enregistrer une vente</Button></Link>
+              <Link to={`/ventes/nouvelle?produit=${open._id}`} className="flex-1"><Button className="w-full">Enregistrer une vente</Button></Link>
               <Link to={`/inventaire/${open._id}/modifier`} className="flex-1"><Button variant="ghost" className="w-full">Modifier</Button></Link>
             </div>
           </motion.div>

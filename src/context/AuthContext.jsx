@@ -15,6 +15,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('user', JSON.stringify(r.user))
       setUser(r.user)
     },
+    updateUser: (patch) => { const u = { ...user, ...patch }; localStorage.setItem('user', JSON.stringify(u)); setUser(u) },
     logout: () => { localStorage.removeItem('token'); localStorage.removeItem('user'); setUser(null) },
   }), [user])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

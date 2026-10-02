@@ -48,7 +48,7 @@ export default function Dashboard() {
                 <div key={s._id} className="flex items-center justify-between gap-3 border-t border-line py-3 first:border-0 text-sm">
                   <div className="min-w-0">
                     <p className="truncate font-semibold">{s.productName}</p>
-                    <p className="text-xs text-ink-soft">Pointure {s.size} · {s.quantity} paire{s.quantity > 1 ? 's' : ''} · {when(s.createdAt)}</p>
+                    <p className="text-xs text-ink-soft">Pointure {s.size} {s.color} · {s.quantity} paire{s.quantity > 1 ? 's' : ''} · {when(s.createdAt)}</p>
                   </div>
                   <b className="shrink-0">{formatFCFA(s.total)}</b>
                 </div>
