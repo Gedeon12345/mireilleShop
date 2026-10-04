@@ -36,7 +36,7 @@ export default function Login() {
         <form onSubmit={submit} className="w-full max-w-sm space-y-5" noValidate>
           <div>
             <h2 className="text-2xl font-bold">Connexion</h2>
-            <p className="mt-1 text-sm text-ink-soft">Espace réservé à la propriétaire.</p>
+            <p className="mt-1 text-sm text-ink-soft">Connectez-vous avec votre email et votre mot de passe.</p>
           </div>
           <Field label="Email">
             <div className="relative"><Mail size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" />
