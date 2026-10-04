@@ -30,6 +30,22 @@ export default defineConfig({
           { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' },
           { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
+        screenshots: [
+          {
+            src: '/screenshots/mobile.png',
+            sizes: '393x852',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Interface mobile de Mireille Shop'
+          },
+          {
+            src: '/screenshots/desktop.png',
+            sizes: '1366x768',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Tableau de bord Mireille Shop'
+          }
+        ],
       },
     }),
   ],
