@@ -20,8 +20,9 @@ export const inventoryService = {
     if (!USE_MOCK) return api.post('/inventory/adjustment', d)
     const v = mockProducts.find((p) => p._id === d.product).sizes.find((s) => s.size === d.size && s.color === d.color)
     const prev = v.quantity
-    v.quantity = d.newQuantity
-    mockMoves.unshift({ _id: `m${Date.now()}`, product: d.product, type: 'adjustment', size: d.size, color: d.color, quantity: d.newQuantity - prev, previousQuantity: prev, newQuantity: d.newQuantity, reason: d.reason, createdAt: new Date().toISOString() })
+    const now = d.delta !== undefined ? prev + d.delta : d.newQuantity
+    v.quantity = now
+    mockMoves.unshift({ _id: `m${Date.now()}`, product: d.product, type: 'adjustment', size: d.size, color: d.color, quantity: now - prev, previousQuantity: prev, newQuantity: now, reason: d.reason, createdAt: new Date().toISOString() })
     return wait({ ok: true })
   },
 }

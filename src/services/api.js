@@ -6,7 +6,7 @@ export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
 const raw = (import.meta.env.VITE_API_URL || '/api').trim().replace(/\/+$/, '')
 const baseURL = /^https?:\/\//.test(raw) && !/\/api$/.test(raw) ? `${raw}/api` : raw
 
-const api = axios.create({ baseURL })
+const api = axios.create({ baseURL, timeout: 60000 })
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
@@ -22,7 +22,8 @@ api.interceptors.response.use(
       localStorage.removeItem('user')
       if (window.location.pathname !== '/connexion') window.location.assign('/connexion')
     }
-    return Promise.reject(new Error(err.response?.data?.message || 'Erreur réseau'))
+    const timeout = err.code === 'ECONNABORTED' ? 'Le serveur met trop de temps à répondre. Réessayez.' : ''
+    return Promise.reject(new Error(err.response?.data?.message || timeout || 'Erreur réseau'))
   }
 )
 export default api

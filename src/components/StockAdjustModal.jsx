@@ -26,7 +26,7 @@ export default function StockAdjustModal({ product, onClose, onDone }) {
     setBusy(true)
     try {
       await inventoryService.adjust({
-        product: product._id, size: v.size, color: v.color, newQuantity: next,
+        product: product._id, size: v.size, color: v.color, ...(mode === 'in' ? { delta: num } : { newQuantity: num }),
         reason: reason.trim() || (mode === 'in' ? 'Réapprovisionnement' : 'Correction d’inventaire'),
       })
       toast.success('Stock mis à jour')

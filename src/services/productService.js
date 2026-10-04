@@ -13,6 +13,7 @@ const toFormData = (d, photo) => {
   const fd = new FormData()
   ;['name', 'category', 'gender', 'price', 'description'].forEach((k) => fd.append(k, c[k] ?? ''))
   fd.append('sizes', JSON.stringify(c.sizes))
+  if (d.updatedAt) fd.append('updatedAt', d.updatedAt) // détecte une fiche devenue périmée
   if (photo?.file) fd.append('image', photo.file, 'photo.jpg')
   if (photo?.removed) fd.append('removeImage', 'true')
   return fd

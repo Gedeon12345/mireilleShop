@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useAuth } from '../context/AuthContext'
 import Field, { inputCls } from '../components/ui/Field'
 import Button from '../components/ui/Button'
+import SlowHint from '../components/ui/SlowHint'
 
 export default function Login() {
   const { login, isAuthenticated } = useAuth()
@@ -47,6 +48,7 @@ export default function Login() {
               <input className={`${inputCls(err)} pl-10`} type="password" autoComplete="current-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>
           </Field>
           <Button type="submit" className="w-full" disabled={busy} icon={busy ? Loader2 : undefined}>{busy ? 'Connexion…' : 'Se connecter'}</Button>
+          {busy && <SlowHint />}
           {import.meta.env.VITE_USE_MOCK !== 'false' && <p className="rounded-xl bg-primary-soft p-3 text-xs text-primary">Mode démo : admin@boutique.cm / admin123</p>}
         </form>
       </div>
