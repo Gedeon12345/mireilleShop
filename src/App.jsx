@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import NewSale from './pages/NewSale.jsx'
 import SalesHistory from './pages/SalesHistory.jsx'
 import Settings from './pages/Settings.jsx'
+import StockMovements from './pages/StockMovements.jsx'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="inventaire/stock-faible" element={<Inventory lowOnly />} />
         <Route path="inventaire/nouveau" element={<ProductForm />} />
         <Route path="inventaire/:id/modifier" element={<ProductForm />} />
+        <Route path="inventaire/:id/mouvements" element={<StockMovements />} />
         <Route path="inventaire/categories" element={<Categories />} />
         <Route path="ventes/nouvelle" element={<NewSale />} />
         <Route path="ventes" element={<SalesHistory />} />

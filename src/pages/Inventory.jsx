@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, Plus, PackageSearch, Footprints, X } from 'lucide-react'
+import { Search, Plus, PackageSearch, Footprints, X, History, Archive } from 'lucide-react'
+import { toast } from 'sonner'
+import Modal from '../components/ui/Modal'
 import PageHeader from '../components/ui/PageHeader'
 import Button from '../components/ui/Button'
 import StatusBadge from '../components/ui/StatusBadge'
@@ -12,28 +14,33 @@ import useFetch from '../hooks/useFetch'
 import { productService } from '../services/productService'
 import { formatFCFA, totalStock, productStatus, stockStatus, colorsOf, groupByColor } from '../utils/format'
 
-const FILTERS = [['all', 'Tous'], ['ok', 'En stock'], ['low', 'Stock faible'], ['out', 'Rupture']]
+const FILTERS = [['all', 'Tous'], ['avail', 'Disponible'], ['low', 'Stock faible'], ['out', 'Rupture']]
 const inputCls = 'w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20'
 
 export default function Inventory({ lowOnly = false }) {
   const { data, loading, error, reload } = useFetch(productService.list)
   const [q, setQ] = useState('')
-  const [cat, setCat] = useState('all')
+  const [sp] = useSearchParams()
+  const [cat, setCat] = useState(sp.get('categorie') || 'all')
+  const [gender, setGender] = useState('all')
+  const [archiving, setArchiving] = useState(false)
+  const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState(lowOnly ? 'low' : 'all')
   const [open, setOpen] = useState(null)
 
   const categories = useMemo(() => [...new Set((data || []).map((p) => p.category.name))], [data])
   const list = useMemo(() => (data || []).filter((p) =>
     (cat === 'all' || p.category.name === cat) &&
-    (status === 'all' || productStatus(p) === status) &&
-    `${p.name} ${p.category.name} ${colorsOf(p).join(' ')}`.toLowerCase().includes(q.toLowerCase())), [data, q, cat, status])
+    (gender === 'all' || p.gender === gender) &&
+    (status === 'all' || (status === 'avail' ? totalStock(p) > 0 : productStatus(p) === status)) &&
+    `${p.name} ${p.category.name} ${colorsOf(p).join(' ')}`.toLowerCase().includes(q.toLowerCase())), [data, q, cat, gender, status])
 
   return (
     <>
       <PageHeader title={lowOnly ? 'Stock faible' : 'Inventaire'} subtitle={data ? `${list.length} produit${list.length > 1 ? 's' : ''} sur ${data.length}` : ' '}
         action={<Link to="/inventaire/nouveau"><Button icon={Plus} className="hidden sm:inline-flex">Ajouter un produit</Button></Link>} />
 
-      <div className="mb-5 grid gap-3 lg:grid-cols-[1fr_240px]">
+      <div className="mb-5 grid gap-3 lg:grid-cols-[1fr_220px_160px]">
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" />
           <input className={`${inputCls} pl-10`} type="search" placeholder="Rechercher un nom, un modèle…" aria-label="Rechercher" value={q} onChange={(e) => setQ(e.target.value)} />
@@ -42,7 +49,11 @@ export default function Inventory({ lowOnly = false }) {
           <option value="all">Toutes les catégories</option>
           {categories.map((c) => <option key={c}>{c}</option>)}
         </select>
-        <div className="flex gap-2 overflow-x-auto lg:col-span-2">
+        <select className={inputCls} aria-label="Genre" value={gender} onChange={(e) => setGender(e.target.value)}>
+          <option value="all">Tous les genres</option>
+          {['Homme', 'Femme', 'Enfant', 'Mixte'].map((g) => <option key={g}>{g}</option>)}
+        </select>
+        <div className="flex gap-2 overflow-x-auto lg:col-span-3">
           {FILTERS.map(([k, l]) => (
             <button key={k} onClick={() => setStatus(k)}
               className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-medium ${status === k ? 'border-primary bg-primary text-white' : 'border-line bg-surface text-ink-soft hover:text-ink'}`}>{l}</button>
@@ -101,8 +112,25 @@ export default function Inventory({ lowOnly = false }) {
               <Link to={`/ventes/nouvelle?produit=${open._id}`} className="flex-1"><Button className="w-full">Enregistrer une vente</Button></Link>
               <Link to={`/inventaire/${open._id}/modifier`} className="flex-1"><Button variant="ghost" className="w-full">Modifier</Button></Link>
             </div>
+            <div className="mt-2 flex gap-2">
+              <Link to={`/inventaire/${open._id}/mouvements`} className="flex-1"><Button variant="ghost" icon={History} className="w-full">Mouvements</Button></Link>
+              <Button variant="ghost" icon={Archive} className="flex-1 !text-danger" onClick={() => setArchiving(true)}>Archiver</Button>
+            </div>
           </motion.div>
         </div>
+      )}
+      {archiving && open && (
+        <Modal title="Archiver ce produit ?" onClose={() => !busy && setArchiving(false)}>
+          <p className="text-sm text-ink-soft">« {open.name} » ne pourra plus être vendu ni modifié. Son historique de ventes est conservé.</p>
+          <div className="mt-5 flex gap-2">
+            <Button variant="ghost" className="flex-1" disabled={busy} onClick={() => setArchiving(false)}>Annuler</Button>
+            <Button className="flex-1 !bg-danger hover:!bg-red-700" disabled={busy} onClick={async () => {
+              setBusy(true)
+              try { await productService.archive(open._id); toast.success('Produit archivé'); setArchiving(false); setOpen(null); reload() }
+              catch (e) { toast.error(e.message) } finally { setBusy(false) }
+            }}>Archiver</Button>
+          </div>
+        </Modal>
       )}
     </>
   )

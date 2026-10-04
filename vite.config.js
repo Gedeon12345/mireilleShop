@@ -17,9 +17,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
 
       manifest: {
-        name: 'Mireille Shop Inventory',
+        name: 'Inventaire Mireille Shop',
         short_name: 'Mireille Shop',
-        description: 'Gestion de Stock pour la boutique',
+        description: 'Application de gestion de stock',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
@@ -39,4 +39,5 @@ export default defineConfig({
       },
     }),
   ],
+  server: { port: 5173, proxy: { '/api': 'http://localhost:5000' } },
 })

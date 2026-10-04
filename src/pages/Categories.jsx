@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Plus, Pencil, Archive, Tags, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import PageHeader from '../components/ui/PageHeader'
@@ -43,7 +44,7 @@ export default function Categories() {
           {data.map((c) => (
             <Card key={c._id} className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="truncate font-display font-semibold">{c.name}</p>
+                <Link to={`/inventaire?categorie=${encodeURIComponent(c.name)}`} className="block truncate font-display font-semibold hover:text-primary">{c.name}</Link>
                 <p className="text-sm text-ink-soft">{c.productCount} produit{c.productCount > 1 ? 's' : ''}</p>
               </div>
               <div className="flex gap-1">
