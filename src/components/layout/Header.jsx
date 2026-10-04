@@ -7,7 +7,7 @@ export default function Header() {
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-surface/90 px-4 py-3 backdrop-blur pt-[calc(0.75rem+env(safe-area-inset-top))] lg:px-10">
       <div className="flex items-center gap-2 lg:hidden">
         <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-white"><Footprints size={17} /></span>
-        <span className="font-display font-bold">Stock Boutique</span>
+        <span className="font-display font-bold">Mireille Shop</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
         <span className="hidden text-sm text-ink-soft sm:block">{user.name}</span>

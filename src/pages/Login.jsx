@@ -25,7 +25,7 @@ export default function Login() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="hidden flex-col justify-between bg-primary p-12 text-white lg:flex">
-        <span className="flex items-center gap-3 font-display text-xl font-bold"><Footprints /> Stock Boutique</span>
+        <span className="flex items-center gap-3 font-display text-xl font-bold"><Footprints /> Mireille Shop</span>
         <div>
           <h1 className="max-w-md text-4xl font-bold leading-tight">Votre inventaire à jour, sans recompter.</h1>
           <p className="mt-4 max-w-sm text-violet-100">Chaque vente met le stock à jour automatiquement.</p>

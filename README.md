@@ -1,4 +1,4 @@
-# Frontend – Stock Boutique (Phase 1)
+# Frontend – Mireille Shop (Phase 1)
 
 ```bash
 cd frontend

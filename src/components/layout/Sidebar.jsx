@@ -11,7 +11,7 @@ export default function Sidebar() {
     <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col gap-1 overflow-y-auto border-r border-line bg-surface px-4 py-5 lg:flex">
       <div className="mb-5 flex items-center gap-3 px-2">
         <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-white"><Footprints size={20} /></span>
-        <span className="font-display text-lg font-bold">Stock Boutique</span>
+        <span className="font-display text-lg font-bold">Mireille Shop</span>
       </div>
       {navGroups.map((g, i) => (
         <nav key={i} className="mb-2" aria-label={g.title || 'Principal'}>
