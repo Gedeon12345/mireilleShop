@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Plus, ShoppingBag, Menu, Tags, AlertTriangle, History, Settings, Users, LogOut, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Package, Plus, ShoppingBag, Menu, Tags, AlertTriangle, History, Settings, Users, Archive, LogOut, ChevronRight } from 'lucide-react'
 import Modal from '../ui/Modal'
 import { useAuth } from '../../context/AuthContext'
 
@@ -10,6 +10,7 @@ const tab = (active) =>
 const ADMIN_MENU = [
   { to: '/inventaire/categories', label: 'Catégories', icon: Tags },
   { to: '/inventaire/stock-faible', label: 'Stock faible', icon: AlertTriangle },
+  { to: '/inventaire/archives', label: 'Produits archivés', icon: Archive },
   { to: '/ventes', label: 'Historique des ventes', icon: History },
   { to: '/equipe', label: 'Équipe', icon: Users },
   { to: '/parametres', label: 'Paramètres', icon: Settings },

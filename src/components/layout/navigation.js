@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, PlusCircle, Tags, AlertTriangle, ShoppingBag, History, Settings, Users } from 'lucide-react'
+import { LayoutDashboard, Package, PlusCircle, Tags, AlertTriangle, ShoppingBag, History, Settings, Users, Archive } from 'lucide-react'
 
 // adminOnly : visible seulement pour la propriétaire
 export const navGroups = [
@@ -8,6 +8,7 @@ export const navGroups = [
     { to: '/inventaire/nouveau', label: 'Ajouter un produit', icon: PlusCircle, adminOnly: true },
     { to: '/inventaire/categories', label: 'Catégories', icon: Tags, adminOnly: true },
     { to: '/inventaire/stock-faible', label: 'Stock faible', icon: AlertTriangle },
+    { to: '/inventaire/archives', label: 'Produits archivés', icon: Archive, adminOnly: true },
   ] },
   { title: 'Ventes', items: [
     { to: '/ventes/nouvelle', label: 'Nouvelle vente', icon: ShoppingBag },

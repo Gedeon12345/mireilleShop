@@ -10,6 +10,7 @@ import SalesHistory from './pages/SalesHistory.jsx'
 import Settings from './pages/Settings.jsx'
 import StockMovements from './pages/StockMovements.jsx'
 import Team from './pages/Team.jsx'
+import ArchivedProducts from './pages/ArchivedProducts.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import AdminRoute from './components/AdminRoute.jsx'
 
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="inventaire/:id/modifier" element={<ProductForm />} />
             <Route path="inventaire/:id/mouvements" element={<StockMovements />} />
             <Route path="inventaire/categories" element={<Categories />} />
+            <Route path="inventaire/archives" element={<ArchivedProducts />} />
             <Route path="equipe" element={<Team />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

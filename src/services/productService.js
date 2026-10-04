@@ -1,5 +1,5 @@
 import api, { USE_MOCK } from './api'
-import { mockProducts, mockCategories } from './mockData'
+import { mockProducts, mockCategories, mockSales } from './mockData'
 import { wait } from './delay'
 
 const clean = (d) => ({
@@ -38,6 +38,19 @@ export const productService = {
   archive: (id) => {
     if (!USE_MOCK) return api.patch(`/products/${id}/archive`)
     mockProducts.find((p) => p._id === id).isActive = false
+    return wait({ ok: true })
+  },
+  listArchived: () => (USE_MOCK ? wait(mockProducts.filter((p) => !p.isActive)) : api.get('/products', { params: { archived: 'true' } })),
+  restore: (id) => {
+    if (!USE_MOCK) return api.patch(`/products/${id}/restore`)
+    mockProducts.find((p) => p._id === id).isActive = true
+    return wait({ ok: true })
+  },
+  remove: (id) => {
+    if (!USE_MOCK) return api.delete(`/products/${id}`)
+    if (mockSales.some((s) => s.items.some((i) => i.product === id)))
+      return Promise.reject(new Error('Ce produit a un historique de ventes : il ne peut pas être supprimé définitivement. Il reste archivé.'))
+    mockProducts.splice(mockProducts.findIndex((p) => p._id === id), 1)
     return wait({ ok: true })
   },
 }
