@@ -12,6 +12,7 @@ import Skeleton from '../components/ui/Skeleton'
 import ErrorState from '../components/ui/ErrorState'
 import EmptyState from '../components/ui/EmptyState'
 import useFetch from '../hooks/useFetch'
+import { useAuth } from '../context/AuthContext'
 import { productService } from '../services/productService'
 import { formatFCFA, totalStock, productStatus, stockStatus, colorsOf, groupByColor } from '../utils/format'
 
@@ -19,6 +20,7 @@ const FILTERS = [['all', 'Tous'], ['avail', 'Disponible'], ['low', 'Stock faible
 const inputCls = 'w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20'
 
 export default function Inventory({ lowOnly = false }) {
+  const { isAdmin } = useAuth()
   const { data, loading, error, reload } = useFetch(productService.list)
   const [q, setQ] = useState('')
   const [sp] = useSearchParams()
@@ -40,7 +42,7 @@ export default function Inventory({ lowOnly = false }) {
   return (
     <>
       <PageHeader title={lowOnly ? 'Stock faible' : 'Inventaire'} subtitle={data ? `${list.length} produit${list.length > 1 ? 's' : ''} sur ${data.length}` : ' '}
-        action={<Link to="/inventaire/nouveau"><Button icon={Plus} className="hidden sm:inline-flex">Ajouter un produit</Button></Link>} />
+        action={isAdmin && <Link to="/inventaire/nouveau"><Button icon={Plus} className="hidden sm:inline-flex">Ajouter un produit</Button></Link>} />
 
       <div className="mb-5 grid gap-3 lg:grid-cols-[1fr_220px_160px]">
         <div className="relative">
@@ -112,13 +114,17 @@ export default function Inventory({ lowOnly = false }) {
             <p className="mt-4 font-semibold">Total : {totalStock(open)} paires</p>
             <div className="mt-5 flex gap-2">
               <Link to={`/ventes/nouvelle?produit=${open._id}`} className="flex-1"><Button className="w-full">Enregistrer une vente</Button></Link>
-              <Link to={`/inventaire/${open._id}/modifier`} className="flex-1"><Button variant="ghost" className="w-full">Modifier</Button></Link>
+              {isAdmin && <Link to={`/inventaire/${open._id}/modifier`} className="flex-1"><Button variant="ghost" className="w-full">Modifier</Button></Link>}
             </div>
+            {isAdmin && (
+            <>
             <div className="mt-2 grid grid-cols-2 gap-2">
               <Button variant="ghost" icon={PackagePlus} className="w-full" onClick={() => setAdjusting(true)}>Ajuster le stock</Button>
               <Link to={`/inventaire/${open._id}/mouvements`}><Button variant="ghost" icon={History} className="w-full">Mouvements</Button></Link>
             </div>
             <Button variant="ghost" icon={Archive} className="mt-2 w-full !text-danger" onClick={() => setArchiving(true)}>Archiver</Button>
+            </>
+            )}
           </motion.div>
         </div>
       )}

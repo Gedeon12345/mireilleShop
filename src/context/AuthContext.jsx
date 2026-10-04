@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const value = useMemo(() => ({
     user,
     isAuthenticated: !!user && !!localStorage.getItem('token'),
+    isAdmin: user?.role !== 'employee', // l'API applique les vrais droits ; ceci ne sert qu'à l'affichage
     login: async (email, password) => {
       const r = await authService.login(email, password)
       localStorage.setItem('token', r.token)

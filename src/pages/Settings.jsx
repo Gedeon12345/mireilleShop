@@ -21,7 +21,7 @@ function useSubmit(fn, ok) {
 const Save = ({ busy, children = 'Enregistrer' }) => <Button type="submit" disabled={busy} icon={busy ? Loader2 : undefined}>{children}</Button>
 
 export default function Settings() {
-  const { user, updateUser, logout } = useAuth()
+  const { user, updateUser, logout, isAdmin } = useAuth()
   const [p, setP] = useState({ name: user.name, email: user.email })
   const [pw, setPw] = useState({ cur: '', next: '', conf: '' })
   const [th, setTh] = useState(getThreshold())
@@ -44,7 +44,7 @@ export default function Settings() {
       <PageHeader title="Paramètres" subtitle="Compte, sécurité et alertes de stock." />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card><form onSubmit={s1} className="space-y-4" noValidate>
-          <h2 className="font-semibold">Mon compte</h2>
+          <h2 className="font-semibold">Mon compte <span className="ml-2 rounded-full bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary">{isAdmin ? 'Propriétaire' : 'Vendeur'}</span></h2>
           <Field label="Nom"><input className={inputCls()} value={p.name} onChange={(e) => setP({ ...p, name: e.target.value })} /></Field>
           <Field label="Email"><input className={inputCls()} type="email" value={p.email} onChange={(e) => setP({ ...p, email: e.target.value })} /></Field>
           <Save busy={b1} />
@@ -60,9 +60,9 @@ export default function Settings() {
         </form></Card>
         <Card><form onSubmit={s3} className="space-y-4" noValidate>
           <h2 className="font-semibold">Seuil de stock</h2>
-          <Field label="Seuil de stock faible (paires par pointure et couleur)" error={thErr}><input className={inputCls(thErr)} type="number" inputMode="numeric" min="1" value={th} onChange={(e) => setTh(e.target.value)} /></Field>
+          <Field label="Seuil de stock faible (paires par pointure et couleur)" error={thErr}><input className={inputCls(thErr)} type="number" inputMode="numeric" min="1" value={th} disabled={!isAdmin} onChange={(e) => setTh(e.target.value)} /></Field>
           <div className="flex flex-wrap gap-2 text-xs"><StatusBadge status="ok" /><span className="self-center text-ink-soft">plus de {th || '…'}</span><StatusBadge status="low" /><span className="self-center text-ink-soft">de 1 à {th || '…'}</span><StatusBadge status="out" /><span className="self-center text-ink-soft">0</span></div>
-          <Save busy={b3} />
+          {isAdmin ? <Save busy={b3} /> : <p className="text-xs text-ink-soft">Seule la propriétaire peut modifier le seuil.</p>}
         </form></Card>
         <Card className="space-y-4">
           <h2 className="font-semibold">Application</h2>

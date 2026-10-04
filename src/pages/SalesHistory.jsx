@@ -11,6 +11,7 @@ import EmptyState from '../components/ui/EmptyState'
 import ErrorState from '../components/ui/ErrorState'
 import useFetch from '../hooks/useFetch'
 import { salesService } from '../services/salesService'
+import { useAuth } from '../context/AuthContext'
 import { formatFCFA, formatDateTime } from '../utils/format'
 
 const Badge = ({ status }) => status === 'cancelled'
@@ -18,6 +19,7 @@ const Badge = ({ status }) => status === 'cancelled'
   : <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700">Validée</span>
 
 export default function SalesHistory() {
+  const { isAdmin } = useAuth()
   const { data, loading, error, reload } = useFetch(salesService.list)
   const [q, setQ] = useState('')
   const [from, setFrom] = useState('')
@@ -44,7 +46,7 @@ export default function SalesHistory() {
 
   return (
     <>
-      <PageHeader title="Historique des ventes" subtitle={data ? `${list.length} transaction${list.length > 1 ? 's' : ''}` : ' '} />
+      <PageHeader title={isAdmin ? 'Historique des ventes' : 'Mes ventes'} subtitle={data ? `${list.length} transaction${list.length > 1 ? 's' : ''}` : ' '} />
       <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_150px_150px]">
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" />
@@ -90,7 +92,7 @@ export default function SalesHistory() {
           ))}
           <div className="mt-3 flex justify-between font-semibold"><span>Total</span><span>{formatFCFA(sel.totalAmount)}</span></div>
           <p className="mt-1 text-xs text-ink-soft">Enregistrée par {sel.createdBy}{sel.cancelledAt && ` · annulée le ${formatDateTime(sel.cancelledAt)}`}</p>
-          {sel.status === 'completed' && (asking ? (
+          {isAdmin && sel.status === 'completed' && (asking ? (
             <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-900">
               <p>Le stock sera restauré. La vente restera visible comme « annulée ».</p>
               <div className="mt-3 flex gap-2">
