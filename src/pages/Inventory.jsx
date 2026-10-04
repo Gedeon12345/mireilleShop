@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, Plus, PackageSearch, Footprints, X, History, Archive } from 'lucide-react'
+import { Search, Plus, PackageSearch, Footprints, X, History, Archive, PackagePlus } from 'lucide-react'
 import { toast } from 'sonner'
 import Modal from '../components/ui/Modal'
+import StockAdjustModal from '../components/StockAdjustModal'
 import PageHeader from '../components/ui/PageHeader'
 import Button from '../components/ui/Button'
 import StatusBadge from '../components/ui/StatusBadge'
@@ -24,6 +25,7 @@ export default function Inventory({ lowOnly = false }) {
   const [cat, setCat] = useState(sp.get('categorie') || 'all')
   const [gender, setGender] = useState('all')
   const [archiving, setArchiving] = useState(false)
+  const [adjusting, setAdjusting] = useState(false)
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState(lowOnly ? 'low' : 'all')
   const [open, setOpen] = useState(null)
@@ -112,13 +114,16 @@ export default function Inventory({ lowOnly = false }) {
               <Link to={`/ventes/nouvelle?produit=${open._id}`} className="flex-1"><Button className="w-full">Enregistrer une vente</Button></Link>
               <Link to={`/inventaire/${open._id}/modifier`} className="flex-1"><Button variant="ghost" className="w-full">Modifier</Button></Link>
             </div>
-            <div className="mt-2 flex gap-2">
-              <Link to={`/inventaire/${open._id}/mouvements`} className="flex-1"><Button variant="ghost" icon={History} className="w-full">Mouvements</Button></Link>
-              <Button variant="ghost" icon={Archive} className="flex-1 !text-danger" onClick={() => setArchiving(true)}>Archiver</Button>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <Button variant="ghost" icon={PackagePlus} className="w-full" onClick={() => setAdjusting(true)}>Ajuster le stock</Button>
+              <Link to={`/inventaire/${open._id}/mouvements`}><Button variant="ghost" icon={History} className="w-full">Mouvements</Button></Link>
             </div>
+            <Button variant="ghost" icon={Archive} className="mt-2 w-full !text-danger" onClick={() => setArchiving(true)}>Archiver</Button>
           </motion.div>
         </div>
       )}
+      {adjusting && open && <StockAdjustModal product={open} onClose={() => setAdjusting(false)} onDone={() => { setAdjusting(false); setOpen(null); reload() }} />}
+
       {archiving && open && (
         <Modal title="Archiver ce produit ?" onClose={() => !busy && setArchiving(false)}>
           <p className="text-sm text-ink-soft">« {open.name} » ne pourra plus être vendu ni modifié. Son historique de ventes est conservé.</p>
