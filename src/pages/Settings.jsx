@@ -9,6 +9,7 @@ import StatusBadge from '../components/ui/StatusBadge'
 import { useAuth } from '../context/AuthContext'
 import { authService } from '../services/authService'
 import { settingsService } from '../services/settingsService'
+import useFetch from '../hooks/useFetch'
 import { getThreshold } from '../utils/format'
 
 function useSubmit(fn, ok) {
@@ -64,6 +65,7 @@ export default function Settings() {
           <div className="flex flex-wrap gap-2 text-xs"><StatusBadge status="ok" /><span className="self-center text-ink-soft">plus de {th || '…'}</span><StatusBadge status="low" /><span className="self-center text-ink-soft">de 1 à {th || '…'}</span><StatusBadge status="out" /><span className="self-center text-ink-soft">0</span></div>
           {isAdmin ? <Save busy={b3} /> : <p className="text-xs text-ink-soft">Seule la propriétaire peut modifier le seuil.</p>}
         </form></Card>
+        {isAdmin && <ShopCard />}
         <Card className="space-y-4">
           <h2 className="font-semibold">Application</h2>
           <div className="flex justify-between text-sm"><span className="text-ink-soft">Devise</span><b>FCFA (XAF)</b></div>
@@ -71,5 +73,33 @@ export default function Settings() {
         </Card>
       </div>
     </>
+  )
+}
+
+function ShopCard() {
+  const { data, loading, error } = useFetch(settingsService.getAll)
+  return (
+    <Card className="lg:col-span-2">
+      <h2 className="font-semibold">Boutique en ligne</h2>
+      <p className="mb-4 mt-1 text-sm text-ink-soft">Ces informations s’affichent sur le site pour les clientes.</p>
+      {error ? <p className="text-sm text-danger">{error}</p> : loading ? <p className="text-sm text-ink-soft">Chargement…</p> : <ShopForm initial={data} />}
+    </Card>
+  )
+}
+
+function ShopForm({ initial }) {
+  const [f, setF] = useState({ shopName: initial.shopName || '', whatsappNumber: initial.whatsappNumber || '', shopAddress: initial.shopAddress || '', deliveryInfo: initial.deliveryInfo || '' })
+  const [busy, submit] = useSubmit(async () => { await settingsService.updateShop(f) }, 'Informations enregistrées')
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
+  return (
+    <form onSubmit={submit} className="grid gap-4 sm:grid-cols-2" noValidate>
+      <Field label="Nom de la boutique"><input className={inputCls()} value={f.shopName} onChange={set('shopName')} /></Field>
+      <Field label="Numéro WhatsApp des commandes" hint="Avec l’indicatif du pays, sans + ni espaces. Exemple : 237690000000">
+        <input className={inputCls()} inputMode="numeric" value={f.whatsappNumber} onChange={set('whatsappNumber')} />
+      </Field>
+      <Field label="Adresse de la boutique (retrait)"><input className={inputCls()} value={f.shopAddress} onChange={set('shopAddress')} /></Field>
+      <Field label="Livraison : zones, frais, délais"><textarea className={inputCls()} rows={3} value={f.deliveryInfo} onChange={set('deliveryInfo')} /></Field>
+      <div className="sm:col-span-2"><Save busy={busy} /></div>
+    </form>
   )
 }

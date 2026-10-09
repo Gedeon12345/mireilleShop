@@ -16,7 +16,7 @@ import { totalStock } from '../utils/format'
 
 const COLORS = ['Noir', 'Blanc', 'Marron', 'Beige', 'Rouge', 'Rose', 'Bleu', 'Vert', 'Gris', 'Camel', 'Doré', 'Argenté']
 const GENDERS = ['Homme', 'Femme', 'Enfant', 'Mixte']
-const EMPTY = { name: '', category: '', gender: 'Mixte', price: '', description: '', sizes: [{ size: '', color: '', quantity: '' }] }
+const EMPTY = { name: '', category: '', gender: 'Mixte', price: '', description: '', showOnline: true, sizes: [{ size: '', color: '', quantity: '' }] }
 
 export default function ProductForm() {
   const { id } = useParams()
@@ -31,7 +31,7 @@ export default function ProductForm() {
 
   useEffect(() => {
     if (prod.data) setPhoto({ file: null, preview: prod.data.image || '', removed: false })
-    if (prod.data) setF({ ...prod.data, category: prod.data.category._id, sizes: prod.data.sizes.map((s) => ({ ...s })) })
+    if (prod.data) setF({ ...prod.data, category: prod.data.category._id, showOnline: prod.data.showOnline !== false, sizes: prod.data.sizes.map((s) => ({ ...s })) })
   }, [prod.data])
 
   const set = (k, v) => setF((x) => ({ ...x, [k]: v }))
@@ -94,6 +94,10 @@ export default function ProductForm() {
             <Field label="Stock total"><div className={`${inputCls()} bg-canvas font-semibold`}>{total} paires</div></Field>
           </div>
           <Field label="Description"><textarea className={inputCls()} rows={3} value={f.description} onChange={(e) => set('description', e.target.value)} /></Field>
+          <label className="flex items-start gap-3 rounded-xl border border-line p-3 text-sm">
+            <input type="checkbox" className="mt-0.5 h-5 w-5 accent-primary" checked={f.showOnline} onChange={(e) => set('showOnline', e.target.checked)} />
+            <span><b>Afficher sur le site client</b><span className="block text-xs text-ink-soft">Décochez pour garder ce produit uniquement en boutique.</span></span>
+          </label>
         </Card>
         <Card className="space-y-3">
           <div className="flex items-center justify-between"><h2 className="font-semibold">Pointures, couleurs et quantités *</h2><span className="text-sm font-semibold text-primary">{total} paires</span></div>

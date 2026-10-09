@@ -61,8 +61,8 @@ export default function ArchivedProducts() {
 
       {del && (
         <Modal title="Supprimer définitivement ?" onClose={() => !busy && setDel(null)}>
-          <p className="text-sm text-ink-soft">« {del.name} » sera effacé pour toujours, avec son historique de stock. Cette action est impossible à annuler.</p>
-          <p className="mt-2 text-sm text-ink-soft">Si ce produit a déjà été vendu, la suppression sera refusée et il restera archivé.</p>
+          <p className="text-sm text-ink-soft">« {del.name} » sera effacé pour toujours (fiche, stock et photo). Cette action est impossible à annuler.</p>
+          <p className="mt-2 text-sm text-ink-soft">Ses ventes passées restent intactes dans l’historique des ventes.</p>
           <div className="mt-4">
             <Field label="Tapez SUPPRIMER pour confirmer">
               <input className={inputCls()} value={word} autoCapitalize="characters" onChange={(e) => setWord(e.target.value)} />

@@ -1,5 +1,5 @@
 import api, { USE_MOCK } from './api'
-import { mockProducts, mockCategories, mockSales } from './mockData'
+import { mockProducts, mockCategories } from './mockData'
 import { wait } from './delay'
 
 const clean = (d) => ({
@@ -12,6 +12,7 @@ const toFormData = (d, photo) => {
   const c = clean(d)
   const fd = new FormData()
   ;['name', 'category', 'gender', 'price', 'description'].forEach((k) => fd.append(k, c[k] ?? ''))
+  fd.append('showOnline', String(d.showOnline !== false))
   fd.append('sizes', JSON.stringify(c.sizes))
   if (d.updatedAt) fd.append('updatedAt', d.updatedAt) // détecte une fiche devenue périmée
   if (photo?.file) fd.append('image', photo.file, 'photo.jpg')
@@ -48,8 +49,6 @@ export const productService = {
   },
   remove: (id) => {
     if (!USE_MOCK) return api.delete(`/products/${id}`)
-    if (mockSales.some((s) => s.items.some((i) => i.product === id)))
-      return Promise.reject(new Error('Ce produit a un historique de ventes : il ne peut pas être supprimé définitivement. Il reste archivé.'))
     mockProducts.splice(mockProducts.findIndex((p) => p._id === id), 1)
     return wait({ ok: true })
   },
